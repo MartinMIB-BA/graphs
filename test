@@ -1,0 +1,60 @@
+import plotly.graph_objects as go
+import pandas as pd
+import numpy as np
+import plotly.io as pio
+
+# Load the data
+df = pd.read_csv('C:/Users/martin.jancovic/Downloads/avg_temp_SHMU.csv')
+
+# Extract x and y values
+x = df['Rok']
+y = df['Priemerná ročná teplota (°C)']
+
+# Perform linear regression
+coefficients = np.polyfit(x, y, 1)  # 1 indicates linear
+polynomial = np.poly1d(coefficients)
+regression_line = polynomial(x)
+
+# Create the figure
+fig = go.Figure()
+
+# Add scatter plot for the data with a line
+fig.add_trace(go.Scatter(
+    x=x, 
+    y=y, 
+    mode='lines+markers',  # Change to lines+markers to show both line and markers
+    name='Priemerná teplota',
+    line=dict(color='red'),
+    marker=dict(color='red'),
+    hovertemplate='Rok %{x}, Teplota %{y:.1f}<extra></extra>'  # Remove trace information
+))
+
+# Add regression line
+fig.add_trace(go.Scatter(
+    x=x, 
+    y=regression_line, 
+    mode='lines', 
+    name='Regresná krivka',
+    line=dict(color='blue'),
+    hovertemplate='Rok %{x}, Regresná krivka %{y:.1f}<extra></extra>'  # Remove trace information
+))
+
+# Update layout with axis titles, graph title, and transparent background
+fig.update_layout(
+    title='Priemerná ročná teplota (°C) - Bratislava letisko',
+    xaxis_title='ROK',
+    yaxis_title='Teplota',
+    plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+    paper_bgcolor='rgba(0,0,0,0)',  # Transparent paper background
+    xaxis=dict(
+        showgrid=True, 
+        gridcolor='grey',  # Grid lines color
+    ),
+    yaxis=dict(
+        showgrid=True,
+        gridcolor='grey',  # Grid lines color
+    )
+)
+
+# Save the figure as an HTML file
+pio.write_html(fig, file='C:/Users/martin.jancovic/Downloads/avg_temp_SHMU_with_regression.html', auto_open=True)
